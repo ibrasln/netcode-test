@@ -18,5 +18,10 @@ namespace NetcodeTest.Coins
             
             TotalCoins.Value += coinValue;
         }
+
+        public void SpendCoins(int value)
+        {
+            TotalCoins.Value -= value;
+        }
     }
 }

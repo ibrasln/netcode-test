@@ -1,5 +1,6 @@
 using System;
 using Input;
+using NetcodeTest.Coins;
 using NetcodeTest.Combat;
 using Unity.Netcode;
 using UnityEngine;
@@ -15,14 +16,16 @@ namespace NetcodeTest.Player
         [SerializeField] private GameObject clientProjectilePrefab;
         [SerializeField] private GameObject muzzleFlash;
         [SerializeField] private Collider2D playerCollider;
+        [SerializeField] private CoinCollector coinCollector;
+        [SerializeField] private int costToFire;
 
         [Header("Settings")] 
         [SerializeField] private float projectileSpeed;
         [SerializeField] private float fireRate;
         [SerializeField] private float muzzleFlashDuration;
 
+        private float _timer;
         private bool _shouldFire;
-        private float _previousFireTime;
         private float _muzzleFlashTimer;
         
         public override void OnNetworkSpawn()
@@ -53,19 +56,27 @@ namespace NetcodeTest.Player
             
             if (!IsOwner) return;
 
+            if (_timer > 0) _timer -= Time.deltaTime;
+            
             if (!_shouldFire) return;
 
-            if (Time.time < 1 / fireRate + _previousFireTime) return;
+            if (_timer > 0) return;
+
+            if (coinCollector.TotalCoins.Value < costToFire) return;
             
             PrimaryFireServerRpc(projectileSpawnPoint.position, projectileSpawnPoint.up);
             SpawnDummyProjectile(projectileSpawnPoint.position, projectileSpawnPoint.up);
             
-            _previousFireTime = Time.time;
+            _timer = 1 / fireRate;
         }
 
         [ServerRpc]
         private void PrimaryFireServerRpc(Vector3 spawnPosition, Vector3 direction)
         {
+            if (coinCollector.TotalCoins.Value < costToFire) return;
+            
+            coinCollector.SpendCoins(costToFire);
+            
             GameObject projectile = Instantiate(serverProjectilePrefab, spawnPosition, Quaternion.identity);
             projectile.transform.up = direction;
             

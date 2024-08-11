@@ -1,5 +1,6 @@
 using System;
 using Input;
+using NetcodeTest.Combat;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -69,6 +70,8 @@ namespace NetcodeTest.Player
             projectile.transform.up = direction;
             
             Physics2D.IgnoreCollision(playerCollider, projectile.GetComponent<Collider2D>());
+            
+            if (projectile.TryGetComponent(out DealDamageOnContact dealDamageOnContact)) dealDamageOnContact.SetOwner(OwnerClientId);
             
             if (projectile.TryGetComponent(out Rigidbody2D rb))
             {

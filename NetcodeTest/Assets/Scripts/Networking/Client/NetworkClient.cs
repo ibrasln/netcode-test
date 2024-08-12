@@ -1,12 +1,10 @@
-using System.Collections.Generic;
-using NetcodeTest.Networking.Shared;
+using System;
 using Unity.Netcode;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace NetcodeTest.Networking.Client
 {
-    public class NetworkClient
+    public class NetworkClient : IDisposable
     {
         private NetworkManager _networkManager;
 
@@ -26,6 +24,11 @@ namespace NetcodeTest.Networking.Client
             if (SceneManager.GetActiveScene().name != MENU_SCENE_NAME) SceneManager.LoadScene(MENU_SCENE_NAME);
             
             if (_networkManager.IsConnectedClient) _networkManager.Shutdown();
+        }
+
+        public void Dispose()
+        {
+            if (_networkManager is not null) _networkManager.OnClientDisconnectCallback -= OnClientDisconnect;
         }
     }
 }

@@ -19,7 +19,7 @@ using UnityEngine.SceneManagement;
 
 namespace NetcodeTest.Networking.Host
 {
-    public class HostGameManager
+    public class HostGameManager : IDisposable
     {
         private Allocation _allocation;
         private string _joinCode;
@@ -117,6 +117,27 @@ namespace NetcodeTest.Networking.Host
                 Lobbies.Instance.SendHeartbeatPingAsync(_lobbyId);
                 yield return delay;
             }
+        }
+
+        public async void Dispose()
+        {
+            HostSingleton.Instance.StopCoroutine(nameof(HeartbeatLobby));
+
+            if (!string.IsNullOrEmpty(_lobbyId))
+            {
+                try
+                {
+                    await Lobbies.Instance.DeleteLobbyAsync(_lobbyId);
+                }
+                catch (LobbyServiceException ex)
+                {
+                    Debug.LogError(ex);
+                }
+
+                _lobbyId = string.Empty;
+            }
+            
+            _networkServer?.Dispose();
         }
     }
 }

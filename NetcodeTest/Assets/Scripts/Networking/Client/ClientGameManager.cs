@@ -15,7 +15,7 @@ using UnityEngine.SceneManagement;
 
 namespace NetcodeTest.Networking.Client
 {
-    public class ClientGameManager
+    public class ClientGameManager : IDisposable
     {
         private JoinAllocation _allocation;
 
@@ -68,6 +68,11 @@ namespace NetcodeTest.Networking.Client
             NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
             
             NetworkManager.Singleton.StartClient();
+        }
+
+        public void Dispose()
+        {
+            _networkClient?.Dispose();
         }
     }
 }

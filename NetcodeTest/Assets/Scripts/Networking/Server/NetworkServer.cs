@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NetcodeTest.Networking.Shared;
 using Unity.Netcode;
@@ -5,7 +6,7 @@ using UnityEngine;
 
 namespace NetcodeTest.Networking.Server
 {
-    public class NetworkServer
+    public class NetworkServer : IDisposable
     {
         private NetworkManager _networkManager;
 
@@ -43,6 +44,18 @@ namespace NetcodeTest.Networking.Server
             {
                 _clientIdToAuth.Remove(clientId);
                 _authIdToUserData.Remove(authId);
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_networkManager is not null)
+            {
+                _networkManager.ConnectionApprovalCallback -= ApprovalCheck;
+                _networkManager.OnServerStarted -= OnNetworkReady;
+                _networkManager.OnClientDisconnectCallback -= OnClientDisconnect;
+                
+                if (_networkManager.IsListening) _networkManager.Shutdown();
             }
         }
     }

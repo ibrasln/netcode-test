@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace NetcodeTest.Networking.Host
@@ -34,6 +35,11 @@ namespace NetcodeTest.Networking.Host
         public void CreateHost()
         {
             GameManager = new HostGameManager();
+        }
+
+        private void OnDestroy()
+        {
+            GameManager?.Dispose();
         }
     }
 }

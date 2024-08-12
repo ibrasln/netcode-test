@@ -25,7 +25,7 @@ namespace NetcodeTest.Networking.Host
         private string _joinCode;
         private string _lobbyId;
 
-        private NetworkServer _networkServer;
+        public NetworkServer NetworkServer { get; private set; }
         
         private const int MAX_CONNECTIONS = 20;
         private const string GAME_SCENE_NAME = "Game";
@@ -86,7 +86,7 @@ namespace NetcodeTest.Networking.Host
                 throw;
             }
 
-            _networkServer = new(NetworkManager.Singleton);
+            NetworkServer = new(NetworkManager.Singleton);
             
             UserData userData = new UserData()
             {
@@ -137,7 +137,7 @@ namespace NetcodeTest.Networking.Host
                 _lobbyId = string.Empty;
             }
             
-            _networkServer?.Dispose();
+            NetworkServer?.Dispose();
         }
     }
 }

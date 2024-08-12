@@ -47,6 +47,16 @@ namespace NetcodeTest.Networking.Server
             }
         }
 
+        public UserData GetUserDataByClientId(ulong clientId)
+        {
+            if (_clientIdToAuth.TryGetValue(clientId, out string authId))
+            {
+                if (_authIdToUserData.TryGetValue(authId, out UserData userData)) return userData;
+            }
+
+            return null;
+        }
+        
         public void Dispose()
         {
             if (_networkManager is null) return;
@@ -57,5 +67,7 @@ namespace NetcodeTest.Networking.Server
                 
             if (_networkManager.IsListening) _networkManager.Shutdown();
         }
+
+        
     }
 }

@@ -49,14 +49,13 @@ namespace NetcodeTest.Networking.Server
 
         public void Dispose()
         {
-            if (_networkManager is not null)
-            {
-                _networkManager.ConnectionApprovalCallback -= ApprovalCheck;
-                _networkManager.OnServerStarted -= OnNetworkReady;
-                _networkManager.OnClientDisconnectCallback -= OnClientDisconnect;
+            if (_networkManager is null) return;
+            
+            _networkManager.ConnectionApprovalCallback -= ApprovalCheck;
+            _networkManager.OnServerStarted -= OnNetworkReady;
+            _networkManager.OnClientDisconnectCallback -= OnClientDisconnect;
                 
-                if (_networkManager.IsListening) _networkManager.Shutdown();
-            }
+            if (_networkManager.IsListening) _networkManager.Shutdown();
         }
     }
 }

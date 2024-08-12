@@ -1,7 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
+using NetcodeTest.Networking.Server;
+using NetcodeTest.Networking.Shared;
+using NetcodeTest.UI;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
@@ -19,6 +23,8 @@ namespace NetcodeTest.Networking.Host
         private Allocation _allocation;
         private string _joinCode;
         private string _lobbyId;
+
+        private NetworkServer _networkServer;
         
         private const int MAX_CONNECTIONS = 20;
         private const string GAME_SCENE_NAME = "Game";
@@ -64,8 +70,10 @@ namespace NetcodeTest.Networking.Host
                         }
                     }
                 };
-
-                Lobby lobby = await Lobbies.Instance.CreateLobbyAsync("My Lobby", MAX_CONNECTIONS, lobbyOptions);
+                
+                string playerName = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Unknown");
+                
+                Lobby lobby = await Lobbies.Instance.CreateLobbyAsync($"{playerName}'s Lobby", MAX_CONNECTIONS, lobbyOptions);
 
                 _lobbyId = lobby.Id;
 
@@ -76,6 +84,18 @@ namespace NetcodeTest.Networking.Host
                 Debug.LogError(ex);
                 throw;
             }
+
+            _networkServer = new(NetworkManager.Singleton);
+            
+            UserData userData = new UserData()
+            {
+                Username = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name")
+            };
+
+            string payload = JsonUtility.ToJson(userData);
+            byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
+
+            NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
             
             NetworkManager.Singleton.StartHost();
 

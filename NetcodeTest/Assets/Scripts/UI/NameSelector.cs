@@ -13,7 +13,7 @@ namespace NetcodeTest.UI
         [SerializeField] private int minNameLength = 1;
         [SerializeField] private int maxNameLength = 12;
 
-        private const string PLAYER_NAME_KEY = "PlayerName";
+        public const string PLAYER_NAME_KEY = "PlayerName";
         
         private void Start()
         {

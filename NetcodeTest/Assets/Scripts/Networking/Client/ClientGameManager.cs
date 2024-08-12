@@ -1,5 +1,8 @@
 using System;
+using System.Text;
 using System.Threading.Tasks;
+using NetcodeTest.Networking.Shared;
+using NetcodeTest.UI;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
@@ -48,6 +51,16 @@ namespace NetcodeTest.Networking.Client
             RelayServerData relayServerData = new(_allocation, "dtls");
             transport.SetRelayServerData(relayServerData);
 
+            UserData userData = new UserData()
+            {
+                Username = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name")
+            };
+
+            string payload = JsonUtility.ToJson(userData);
+            byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
+
+            NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
+            
             NetworkManager.Singleton.StartClient();
 
             NetworkManager.Singleton.SceneManager.LoadScene(GAME_SCENE_NAME, LoadSceneMode.Single);

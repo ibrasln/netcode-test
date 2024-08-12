@@ -9,6 +9,7 @@ using NetcodeTest.UI;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
+using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using Unity.Services.Relay;
@@ -89,7 +90,8 @@ namespace NetcodeTest.Networking.Host
             
             UserData userData = new UserData()
             {
-                Username = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name")
+                Username = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name"),
+                UserAuthId = AuthenticationService.Instance.PlayerId
             };
 
             string payload = JsonUtility.ToJson(userData);

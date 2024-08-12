@@ -6,6 +6,7 @@ namespace NetcodeTest.Networking.Shared
     public class UserData
     {
         public string Username;
+        public string UserAuthId;
         
     }
 }

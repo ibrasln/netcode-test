@@ -6,6 +6,7 @@ using NetcodeTest.UI;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
+using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
@@ -17,6 +18,8 @@ namespace NetcodeTest.Networking.Client
     public class ClientGameManager
     {
         private JoinAllocation _allocation;
+
+        private NetworkClient _networkClient;
         
         private const string MENU_SCENE_NAME = "Menu";
         private const string GAME_SCENE_NAME = "Game";
@@ -25,6 +28,8 @@ namespace NetcodeTest.Networking.Client
         {
             await UnityServices.InitializeAsync();
 
+            _networkClient = new(NetworkManager.Singleton); 
+            
             AuthState authState = await AuthenticationWrapper.Authenticate();
 
             return authState == AuthState.Authenticated;
@@ -53,7 +58,8 @@ namespace NetcodeTest.Networking.Client
 
             UserData userData = new UserData()
             {
-                Username = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name")
+                Username = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name"),
+                UserAuthId = AuthenticationService.Instance.PlayerId
             };
 
             string payload = JsonUtility.ToJson(userData);
@@ -62,8 +68,6 @@ namespace NetcodeTest.Networking.Client
             NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
             
             NetworkManager.Singleton.StartClient();
-
-            NetworkManager.Singleton.SceneManager.LoadScene(GAME_SCENE_NAME, LoadSceneMode.Single);
         }
     }
 }

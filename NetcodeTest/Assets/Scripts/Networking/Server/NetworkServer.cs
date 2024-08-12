@@ -30,6 +30,8 @@ namespace NetcodeTest.Networking.Server
             _authIdToUserData[userData.UserAuthId] = userData;
 
             response.Approved = true;
+            response.Position = SpawnPoint.GetRandomSpawnPosition();
+            response.Rotation = Quaternion.identity;
             response.CreatePlayerObject = true;
         }
         

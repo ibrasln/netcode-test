@@ -906,7 +906,7 @@ MonoBehaviour:
   muzzleFlash: {fileID: 2060821006843772165}
   playerCollider: {fileID: 4536570812493174500}
   coinCollector: {fileID: 243507266476359896}
-  costToFire: 1
+  costToFire: 5
   projectileSpeed: 25
   fireRate: 0.75
   muzzleFlashDuration: 0.075
@@ -922,7 +922,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e04f6f301e64ff4befb1b7486948c43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <MaxHealth>k__BackingField: 100
+  <MaxHealth>k__BackingField: 20
   CurrentHealth:
     m_InternalValue: 0
 --- !u!114 &243507266476359896

@@ -7,8 +7,9 @@ namespace NetcodeTest.Combat
 {
     public class RespawnHandler : NetworkBehaviour
     {
-        [SerializeField] private NetworkObject playerPrefab;
-
+        [SerializeField] private TankPlayer playerPrefab;
+        [SerializeField] private float keptCoinPercentage;
+        
         public override void OnNetworkSpawn()
         {
             if (!IsServer) return;
@@ -44,18 +45,21 @@ namespace NetcodeTest.Combat
 
         private void HandlePlayerDeath(TankPlayer player)
         {
+            int keptCoins = (int)(player.Wallet.TotalCoins.Value * (keptCoinPercentage / 100));
             Destroy(player.gameObject);
 
-            StartCoroutine(RespawnPlayerRoutine(player.OwnerClientId));
+            StartCoroutine(RespawnPlayerRoutine(player.OwnerClientId, keptCoins));
         }
 
-        private IEnumerator RespawnPlayerRoutine(ulong ownerClientId)
+        private IEnumerator RespawnPlayerRoutine(ulong ownerClientId, int keptCoins)
         {
             yield return null;
 
-            NetworkObject playerInstance = Instantiate(playerPrefab, SpawnPoint.GetRandomSpawnPosition(), Quaternion.identity);
-
-            playerInstance.SpawnAsPlayerObject(ownerClientId);
+            TankPlayer playerInstance = Instantiate(playerPrefab, SpawnPoint.GetRandomSpawnPosition(), Quaternion.identity);
+            
+            playerInstance.NetworkObject.SpawnAsPlayerObject(ownerClientId);
+            
+            playerInstance.Wallet.TotalCoins.Value = keptCoins; 
         }
     }
 }

@@ -23,7 +23,7 @@ namespace NetcodeTest
         {
             if (SpawnPoints.Count == 0) return Vector3.zero;
             
-            int index = Random.Range(0, SpawnPoints.Count + 1);
+            int index = Random.Range(0, SpawnPoints.Count);
             return SpawnPoints[index].transform.position;
         }
 

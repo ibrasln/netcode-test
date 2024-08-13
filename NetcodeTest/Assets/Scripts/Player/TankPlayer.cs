@@ -1,5 +1,6 @@
 using System;
 using Cinemachine;
+using NetcodeTest.Coins;
 using NetcodeTest.Combat;
 using NetcodeTest.Networking.Host;
 using NetcodeTest.Networking.Shared;
@@ -14,6 +15,7 @@ namespace NetcodeTest.Player
         [Header("References")]
         [SerializeField] private CinemachineVirtualCamera virtualCamera;
         [field: SerializeField] public Health Health { get; private set; }
+        [field: SerializeField] public CoinCollector Wallet { get; private set; }
         
         [Header("Settings")]
         [SerializeField] private int ownerPriority = 15;

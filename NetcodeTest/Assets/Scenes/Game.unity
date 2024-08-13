@@ -369,6 +369,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   leaderboardEntityHolder: {fileID: 195392999}
   leaderboardEntityPrefab: {fileID: 2590680415384057807, guid: 8edea404a4d92124197b1041df26edd7, type: 3}
+  entitiesToDisplay: 8
 --- !u!4 &92239518
 Transform:
   m_ObjectHideFlags: 0

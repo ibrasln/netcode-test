@@ -132,6 +132,8 @@ namespace NetcodeTest.UI.Leaderboard
         
         private void HandlePlayerDespawned(TankPlayer player)
         {
+            if(IsServer && player.OwnerClientId == OwnerClientId) { return; }
+            
             foreach (LeaderboardEntityState entity in _leaderboardEntities)
             {
                 if (entity.ClientId != player.OwnerClientId) continue;

@@ -8,8 +8,10 @@ namespace NetcodeTest.Networking.Server
 {
     public class NetworkServer : IDisposable
     {
+        public Action<string> OnClientLeft;
+        
         private NetworkManager _networkManager;
-
+        
         private Dictionary<ulong, string> _clientIdToAuth = new();
         private Dictionary<string, UserData> _authIdToUserData = new();
         
@@ -46,6 +48,7 @@ namespace NetcodeTest.Networking.Server
             {
                 _clientIdToAuth.Remove(clientId);
                 _authIdToUserData.Remove(authId);
+                OnClientLeft?.Invoke(authId);
             }
         }
 

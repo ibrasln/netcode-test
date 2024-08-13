@@ -20,12 +20,17 @@ namespace NetcodeTest.Networking.Client
         private void OnClientDisconnect(ulong clientId)
         {
             if (clientId != 0 && clientId != _networkManager.LocalClientId) { return; }
+            
+            Disconnect();
+        }
 
+        public void Disconnect()
+        {
             if (SceneManager.GetActiveScene().name != MENU_SCENE_NAME) SceneManager.LoadScene(MENU_SCENE_NAME);
             
             if (_networkManager.IsConnectedClient) _networkManager.Shutdown();
         }
-
+        
         public void Dispose()
         {
             if (_networkManager is not null) _networkManager.OnClientDisconnectCallback -= OnClientDisconnect;

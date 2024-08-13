@@ -910,7 +910,7 @@ MonoBehaviour:
   playerCollider: {fileID: 4536570812493174500}
   coinCollector: {fileID: 243507266476359896}
   costToFire: 5
-  projectileSpeed: 25
+  projectileSpeed: 35
   fireRate: 0.75
   muzzleFlashDuration: 0.075
 --- !u!114 &7920200809282723181

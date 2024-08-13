@@ -922,7 +922,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e04f6f301e64ff4befb1b7486948c43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <MaxHealth>k__BackingField: 20
+  <MaxHealth>k__BackingField: 100
   CurrentHealth:
     m_InternalValue: 0
 --- !u!114 &243507266476359896

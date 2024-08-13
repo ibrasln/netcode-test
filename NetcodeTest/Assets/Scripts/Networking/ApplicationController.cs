@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using NetcodeTest.Networking.Client;
 using NetcodeTest.Networking.Host;
+using NetcodeTest.Networking.Server;
 using UnityEngine;
 
 namespace NetcodeTest.Networking
@@ -10,6 +11,7 @@ namespace NetcodeTest.Networking
     {
         [SerializeField] private ClientSingleton clientPrefab;
         [SerializeField] private HostSingleton hostPrefab;
+        [SerializeField] private ServerSingleton serverPrefab;
         
         private async void Start()
         {
@@ -22,7 +24,10 @@ namespace NetcodeTest.Networking
         {
             if (isDedicatedServer)
             {
-                
+                ServerSingleton serverSingleton = Instantiate(serverPrefab);
+                await serverSingleton.CreateServer();
+
+                await serverSingleton.GameManager.StartGameServerAsync();
             }
             else
             {

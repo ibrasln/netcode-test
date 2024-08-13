@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NetcodeTest.Networking.Shared;
 using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 
 namespace NetcodeTest.Networking.Server
@@ -23,6 +24,14 @@ namespace NetcodeTest.Networking.Server
             _networkManager.OnServerStarted += OnNetworkReady;
         }
 
+        public bool OpenConnection(string ip, int port)
+        {
+            UnityTransport transport = _networkManager.gameObject.GetComponent<UnityTransport>();
+            transport.SetConnectionData(ip, (ushort)port);
+
+            return _networkManager.StartServer();
+        }
+        
         private void ApprovalCheck(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
         {
             string payload = System.Text.Encoding.UTF8.GetString(request.Payload);

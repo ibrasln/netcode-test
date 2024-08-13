@@ -938,7 +938,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TotalCoins:
-    m_InternalValue: 15
+    m_InternalValue: 0
+  health: {fileID: 7920200809282723181}
+  coinPrefab: {fileID: 5302760010711943413, guid: d8f8a25845a044046ad860b3a6505f73, type: 3}
+  coinSpread: 3
+  bountyPercentage: 50
+  bountyCoinCount: 10
+  minBountyCoinValue: 5
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!1 &6736528969462312590
 GameObject:
   m_ObjectHideFlags: 0

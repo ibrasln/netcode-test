@@ -14,12 +14,15 @@ namespace NetcodeTest.Player
     {
         [Header("References")]
         [SerializeField] private CinemachineVirtualCamera virtualCamera;
+
+        [SerializeField] private SpriteRenderer minimapIcon;
         [field: SerializeField] public Health Health { get; private set; }
         [field: SerializeField] public CoinCollector Wallet { get; private set; }
         
         [Header("Settings")]
         [SerializeField] private int ownerPriority = 15;
-
+        [SerializeField] private Color minimapIconColor;
+        
         public NetworkVariable<FixedString32Bytes> PlayerName = new();
 
         public static event Action<TankPlayer> OnPlayerSpawned;
@@ -39,6 +42,8 @@ namespace NetcodeTest.Player
             if (IsOwner)
             {
                 virtualCamera.Priority = ownerPriority;
+
+                minimapIcon.color = minimapIconColor;
             }
         }
 

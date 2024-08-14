@@ -16,6 +16,7 @@ namespace NetcodeTest.Player
         [SerializeField] private CinemachineVirtualCamera virtualCamera;
 
         [SerializeField] private SpriteRenderer minimapIcon;
+        [SerializeField] private Texture2D crosshair;
         [field: SerializeField] public Health Health { get; private set; }
         [field: SerializeField] public CoinCollector Wallet { get; private set; }
         
@@ -44,6 +45,8 @@ namespace NetcodeTest.Player
                 virtualCamera.Priority = ownerPriority;
 
                 minimapIcon.color = minimapIconColor;
+                
+                Cursor.SetCursor(crosshair, new(crosshair.width / 2, crosshair.height / 2), CursorMode.Auto);
             }
         }
 

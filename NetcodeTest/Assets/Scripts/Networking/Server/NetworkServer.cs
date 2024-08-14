@@ -9,6 +9,8 @@ namespace NetcodeTest.Networking.Server
 {
     public class NetworkServer : IDisposable
     {
+        public Action<UserData> OnUserJoined;
+        public Action<UserData> OnUserLeft;
         public Action<string> OnClientLeft;
         
         private NetworkManager _networkManager;
@@ -40,6 +42,8 @@ namespace NetcodeTest.Networking.Server
             _clientIdToAuth[request.ClientNetworkId] = userData.UserAuthId;
             _authIdToUserData[userData.UserAuthId] = userData;
 
+            OnUserJoined?.Invoke(userData);
+            
             response.Approved = true;
             response.Position = SpawnPoint.GetRandomSpawnPosition();
             response.Rotation = Quaternion.identity;
@@ -55,8 +59,11 @@ namespace NetcodeTest.Networking.Server
         {
             if (_clientIdToAuth.TryGetValue(clientId, out string authId))
             {
+                OnUserLeft?.Invoke(_authIdToUserData[authId]);
+                
                 _clientIdToAuth.Remove(clientId);
                 _authIdToUserData.Remove(authId);
+                
                 OnClientLeft?.Invoke(authId);
             }
         }

@@ -3,6 +3,7 @@ using Cinemachine;
 using NetcodeTest.Coins;
 using NetcodeTest.Combat;
 using NetcodeTest.Networking.Host;
+using NetcodeTest.Networking.Server;
 using NetcodeTest.Networking.Shared;
 using Unity.Collections;
 using Unity.Netcode;
@@ -33,7 +34,16 @@ namespace NetcodeTest.Player
         {
             if (IsServer)
             {
-                UserData userData = HostSingleton.Instance.GameManager.NetworkServer.GetUserDataByClientId(OwnerClientId);
+                UserData userData = null;
+                
+                if (IsHost)
+                {
+                    userData = HostSingleton.Instance.GameManager.NetworkServer.GetUserDataByClientId(OwnerClientId);
+                }
+                else
+                {
+                    userData = ServerSingleton.Instance.GameManager.NetworkServer.GetUserDataByClientId(OwnerClientId);
+                }
 
                 PlayerName.Value = userData.Username;
                 

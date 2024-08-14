@@ -10,8 +10,6 @@ namespace NetcodeTest.Networking.Server
 {
     public class ServerGameManager : IDisposable
     {
-        private NetworkServer _networkServer;
-        
         private string _serverIp;
         private int _serverPort;
         private int _queryPort;
@@ -22,12 +20,14 @@ namespace NetcodeTest.Networking.Server
         
         private const string GAME_SCENE_NAME = "Game";
         
+        public NetworkServer NetworkServer { get; private set; }
+        
         public ServerGameManager(string serverIp, int serverPort, int queryPort, NetworkManager manager)
         {
             _serverIp = serverIp;
             _serverPort = serverPort;
             _queryPort = queryPort;
-            _networkServer = new(manager);
+            NetworkServer = new(manager);
             _multiplayAllocationService = new();
         }
         
@@ -43,8 +43,8 @@ namespace NetcodeTest.Networking.Server
                 {
                     await StartBackfill(matchmakerPayload);
 
-                    _networkServer.OnUserJoined += UserJoined;
-                    _networkServer.OnUserLeft += UserLeft;
+                    NetworkServer.OnUserJoined += UserJoined;
+                    NetworkServer.OnUserLeft += UserLeft;
                     
                 }
                 else
@@ -58,7 +58,7 @@ namespace NetcodeTest.Networking.Server
                 throw;
             }
             
-            if(!_networkServer.OpenConnection(_serverIp, _serverPort))
+            if(!NetworkServer.OpenConnection(_serverIp, _serverPort))
             {
                 Debug.LogError("Network server didn't start as expected!");
                 return;
@@ -125,12 +125,12 @@ namespace NetcodeTest.Networking.Server
         
         public void Dispose()
         {
-            _networkServer.OnUserJoined -= UserJoined;
-            _networkServer.OnUserLeft -= UserLeft;
+            NetworkServer.OnUserJoined -= UserJoined;
+            NetworkServer.OnUserLeft -= UserLeft;
             
             _backfiller?.Dispose();
             _multiplayAllocationService?.Dispose();
-            _networkServer?.Dispose();
+            NetworkServer?.Dispose();
         }
     }
 }

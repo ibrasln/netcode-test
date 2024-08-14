@@ -12,6 +12,8 @@ namespace NetcodeTest.Networking
         [SerializeField] private ClientSingleton clientPrefab;
         [SerializeField] private HostSingleton hostPrefab;
         [SerializeField] private ServerSingleton serverPrefab;
+
+        private ApplicationData _applicationData;
         
         private async void Start()
         {
@@ -24,6 +26,8 @@ namespace NetcodeTest.Networking
         {
             if (isDedicatedServer)
             {
+                _applicationData = new();
+                
                 ServerSingleton serverSingleton = Instantiate(serverPrefab);
                 await serverSingleton.CreateServer();
 

@@ -34,8 +34,8 @@ namespace NetcodeTest.UI
             {
                 queueStatusText.text = "Cancelling...";
                 _isCancelling = true;
-                
-                // Cancel matchmaking
+
+                await ClientSingleton.Instance.GameManager.CancelMatchmaking();
                 
                 _isCancelling = false;
                 _isMatchmaking = false;
@@ -44,11 +44,40 @@ namespace NetcodeTest.UI
                 return;
             }
             
-            // Start queue
+            ClientSingleton.Instance.GameManager.MatchmakeAsync(OnMatchMade);
             
             findMatchButtonText.text = "Cancel";
             queueStatusText.text = "Searching...";
             _isMatchmaking = true;
+        }
+
+        private void OnMatchMade(MatchmakerPollingResult result)
+        {
+            switch (result)
+            {
+                case MatchmakerPollingResult.Success:
+                    queueStatusText.text = "Connecting...";
+                    break;
+                
+                case MatchmakerPollingResult.TicketCreationError:
+                    queueStatusText.text = "TicketCreationError";
+                    break;
+                
+                case MatchmakerPollingResult.TicketCancellationError:
+                    queueStatusText.text = "TicketCancellationError";
+                    break;
+                
+                case MatchmakerPollingResult.TicketRetrievalError:
+                    queueStatusText.text = "TicketRetrievalError";
+                    break;
+                
+                case MatchmakerPollingResult.MatchAssignmentError:
+                    queueStatusText.text = "MatchAssignmentError";
+                    break;
+                
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(result), result, null);
+            }
         }
         
         public async void StartHost()

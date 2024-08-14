@@ -3295,7 +3295,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1432367133}
         m_TargetAssemblyTypeName: NetcodeTest.UI.MainMenu, Assembly-CSharp
-        m_MethodName: StartHost
+        m_MethodName: FindMatch
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

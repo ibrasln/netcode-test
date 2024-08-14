@@ -23,7 +23,7 @@ namespace NetcodeTest.Networking.Shared
     {
         public string Username;
         public string UserAuthId;
-        public GameInfo UserGamePreferences;
+        public GameInfo UserGamePreferences = new();
     }
 
     [Serializable]

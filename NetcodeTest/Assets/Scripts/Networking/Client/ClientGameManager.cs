@@ -18,8 +18,10 @@ namespace NetcodeTest.Networking.Client
     public class ClientGameManager : IDisposable
     {
         private JoinAllocation _allocation;
-
         private NetworkClient _networkClient;
+        private MatchplayMatchmaker _matchmaker;
+
+        private UserData _userData;
         
         private const string MENU_SCENE_NAME = "Menu";
         private const string GAME_SCENE_NAME = "Game";
@@ -28,11 +30,23 @@ namespace NetcodeTest.Networking.Client
         {
             await UnityServices.InitializeAsync();
 
-            _networkClient = new(NetworkManager.Singleton); 
+            _networkClient = new(NetworkManager.Singleton);
+            _matchmaker = new();
             
             AuthState authState = await AuthenticationWrapper.Authenticate();
 
-            return authState == AuthState.Authenticated;
+            if (authState == AuthState.Authenticated)
+            {
+                _userData = new UserData()
+                {
+                    Username = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name"),
+                    UserAuthId = AuthenticationService.Instance.PlayerId
+                };
+                
+                return true;
+            }
+
+            return false;
         }
 
         public void GoToMenu()
@@ -56,13 +70,7 @@ namespace NetcodeTest.Networking.Client
             RelayServerData relayServerData = new(_allocation, "dtls");
             transport.SetRelayServerData(relayServerData);
 
-            UserData userData = new UserData()
-            {
-                Username = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name"),
-                UserAuthId = AuthenticationService.Instance.PlayerId
-            };
-
-            string payload = JsonUtility.ToJson(userData);
+            string payload = JsonUtility.ToJson(_userData);
             byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
 
             NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
@@ -70,6 +78,18 @@ namespace NetcodeTest.Networking.Client
             NetworkManager.Singleton.StartClient();
         }
 
+        private async Task<MatchmakerPollingResult> GetMatchAsync()
+        {
+            MatchmakingResult matchmakingResult = await _matchmaker.Matchmake(_userData);
+
+            if (matchmakingResult.result == MatchmakerPollingResult.Success)
+            {
+                // Connect to server
+            }
+
+            return matchmakingResult.result;
+        }
+        
         public void Disconnect()
         {
             _networkClient.Disconnect();

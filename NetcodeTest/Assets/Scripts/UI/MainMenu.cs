@@ -13,6 +13,9 @@ namespace NetcodeTest.UI
         [SerializeField] private TMP_Text queueTimerText;
         [SerializeField] private TMP_Text findMatchButtonText;
 
+        private bool _isMatchmaking;
+        private bool _isCancelling;
+        
         private void Start()
         {
             if (ClientSingleton.Instance == null) return;
@@ -23,6 +26,31 @@ namespace NetcodeTest.UI
             queueTimerText.text = string.Empty;
         }
 
+        public async void FindMatch()
+        {
+            if (_isCancelling) return;
+            
+            if (_isMatchmaking)
+            {
+                queueStatusText.text = "Cancelling...";
+                _isCancelling = true;
+                
+                // Cancel matchmaking
+                
+                _isCancelling = false;
+                _isMatchmaking = false;
+                findMatchButtonText.text = "Find Match";
+                queueStatusText.text = string.Empty;
+                return;
+            }
+            
+            // Start queue
+            
+            findMatchButtonText.text = "Cancel";
+            queueStatusText.text = "Searching...";
+            _isMatchmaking = true;
+        }
+        
         public async void StartHost()
         {
             await HostSingleton.Instance.GameManager.StartHostAsync();

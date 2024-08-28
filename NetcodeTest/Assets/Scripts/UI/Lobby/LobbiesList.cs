@@ -1,4 +1,3 @@
-using System;
 using NetcodeTest.Networking.Client;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
@@ -8,10 +7,10 @@ namespace NetcodeTest.UI
 {
     public class LobbiesList : MonoBehaviour
     {
+        [SerializeField] private MainMenu mainMenu;
         [SerializeField] private Transform lobbyItemParent;
         [SerializeField] private LobbyItem lobbyItemPrefab;
         
-        private bool _isJoining;
         private bool _isRefreshing;
 
         private void OnEnable()
@@ -57,26 +56,10 @@ namespace NetcodeTest.UI
             
             _isRefreshing = false;
         }
-        
-        public async void JoinAsync(Lobby lobby)
+
+        public void JoinAsync(Lobby lobby)
         {
-            if (_isJoining) return; 
-                
-            _isJoining = true;
-            
-            try
-            {
-                Lobby joiningLobby = await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id);
-                string joinCode = joiningLobby.Data["JoinCode"].Value;
-
-                await ClientSingleton.Instance.GameManager.StartClientAsync(joinCode);
-            }
-            catch (LobbyServiceException ex)
-            {
-                Debug.LogError(ex);
-            }
-
-            _isJoining = false;
+            mainMenu.JoinAsync(lobby);
         }
     }
 }

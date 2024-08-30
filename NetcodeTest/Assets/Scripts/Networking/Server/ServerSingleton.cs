@@ -21,7 +21,6 @@ namespace NetcodeTest.Networking.Server
 
                 if (_instance == null)
                 {
-                    Debug.LogError("No ServerSingleton in the scene!");
                     return null;
                 }
 

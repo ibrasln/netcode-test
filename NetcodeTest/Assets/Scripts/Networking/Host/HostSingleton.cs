@@ -20,7 +20,6 @@ namespace NetcodeTest.Networking.Host
 
                 if (_instance == null)
                 {
-                    Debug.LogError("No HostSingleton in the scene!");
                     return null;
                 }
 

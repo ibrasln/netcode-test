@@ -4,6 +4,7 @@ using NetcodeTest.Coins;
 using NetcodeTest.Combat;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace NetcodeTest.Player
 {
@@ -24,6 +25,7 @@ namespace NetcodeTest.Player
         [SerializeField] private float fireRate;
         [SerializeField] private float muzzleFlashDuration;
 
+        private bool _isPointerOverUI;
         private float _timer;
         private bool _shouldFire;
         private float _muzzleFlashTimer;
@@ -56,6 +58,8 @@ namespace NetcodeTest.Player
             
             if (!IsOwner) return;
 
+            _isPointerOverUI = EventSystem.current.IsPointerOverGameObject();
+            
             if (_timer > 0) _timer -= Time.deltaTime;
             
             if (!_shouldFire) return;
@@ -119,6 +123,10 @@ namespace NetcodeTest.Player
         
         private void HandlePrimaryFire(bool shouldFire)
         {
+            if (shouldFire)
+            {
+                if (_isPointerOverUI) return;
+            }
             _shouldFire = shouldFire;
         }
     }

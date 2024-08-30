@@ -20,7 +20,6 @@ namespace NetcodeTest.Networking.Client
 
                 if (_instance == null)
                 {
-                    Debug.LogError("No ClientSingleton in the scene!");
                     return null;
                 }
 

@@ -5,6 +5,7 @@ using TMPro;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace NetcodeTest.UI
 {
@@ -14,7 +15,9 @@ namespace NetcodeTest.UI
         [SerializeField] private TMP_Text queueStatusText;
         [SerializeField] private TMP_Text queueTimerText;
         [SerializeField] private TMP_Text findMatchButtonText;
-
+        [SerializeField] private Toggle teamToggle;
+        [SerializeField] private Toggle privateToggle;
+        
         private bool _isMatchmaking;
         private bool _isCancelling;
         private bool _isBusy;
@@ -63,7 +66,7 @@ namespace NetcodeTest.UI
 
             if (_isBusy) return;
             
-            ClientSingleton.Instance.GameManager.MatchmakeAsync(OnMatchMade);
+            ClientSingleton.Instance.GameManager.MatchmakeAsync(teamToggle.isOn, OnMatchMade);
                 
             findMatchButtonText.text = "Cancel";
             queueStatusText.text = "Searching...";
@@ -107,7 +110,7 @@ namespace NetcodeTest.UI
             
             _isBusy = true;
             
-            await HostSingleton.Instance.GameManager.StartHostAsync();
+            await HostSingleton.Instance.GameManager.StartHostAsync(privateToggle.isOn);
 
             _isBusy = false;
         }

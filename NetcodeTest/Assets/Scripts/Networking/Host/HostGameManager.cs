@@ -36,7 +36,7 @@ namespace NetcodeTest.Networking.Host
             _playerPrefab = playerPrefab;
         }
         
-        public async Task StartHostAsync()
+        public async Task StartHostAsync(bool isPrivate)
         {
             try
             { 
@@ -68,7 +68,7 @@ namespace NetcodeTest.Networking.Host
             {
                 CreateLobbyOptions lobbyOptions = new()
                 {
-                    IsPrivate = false,
+                    IsPrivate = isPrivate,
                     Data = new Dictionary<string, DataObject>()
                     {
                         {

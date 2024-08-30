@@ -10,24 +10,20 @@ namespace NetcodeTest.Networking.Server
 {
     public class ServerGameManager : IDisposable
     {
+        public NetworkServer NetworkServer { get; private set; }
+        
         private string _serverIp;
         private int _serverPort;
         private int _queryPort;
-
         private MatchplayBackfiller _backfiller;
-
         private MultiplayAllocationService _multiplayAllocationService;
         
-        private const string GAME_SCENE_NAME = "Game";
-        
-        public NetworkServer NetworkServer { get; private set; }
-        
-        public ServerGameManager(string serverIp, int serverPort, int queryPort, NetworkManager manager)
+        public ServerGameManager(string serverIp, int serverPort, int queryPort, NetworkManager manager, NetworkObject playerPrefab)
         {
             _serverIp = serverIp;
             _serverPort = serverPort;
             _queryPort = queryPort;
-            NetworkServer = new(manager);
+            NetworkServer = new(manager, playerPrefab);
             _multiplayAllocationService = new();
         }
         
@@ -63,8 +59,6 @@ namespace NetcodeTest.Networking.Server
                 Debug.LogError("Network server didn't start as expected!");
                 return;
             }
-            
-            NetworkManager.Singleton.SceneManager.LoadScene(GAME_SCENE_NAME, LoadSceneMode.Single);
         }
 
         private async Task StartBackfill(MatchmakingResults payload)

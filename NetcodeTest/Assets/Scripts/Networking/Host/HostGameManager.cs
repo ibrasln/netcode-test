@@ -21,14 +21,20 @@ namespace NetcodeTest.Networking.Host
 {
     public class HostGameManager : IDisposable
     {
+        public NetworkServer NetworkServer { get; private set; }
+        
         private Allocation _allocation;
         private string _joinCode;
         private string _lobbyId;
-
-        public NetworkServer NetworkServer { get; private set; }
+        private NetworkObject _playerPrefab;
         
         private const int MAX_CONNECTIONS = 20;
         private const string GAME_SCENE_NAME = "Game";
+
+        public HostGameManager(NetworkObject playerPrefab)
+        {
+            _playerPrefab = playerPrefab;
+        }
         
         public async Task StartHostAsync()
         {
@@ -86,7 +92,7 @@ namespace NetcodeTest.Networking.Host
                 throw;
             }
 
-            NetworkServer = new(NetworkManager.Singleton);
+            NetworkServer = new(NetworkManager.Singleton, _playerPrefab);
             
             UserData userData = new UserData()
             {

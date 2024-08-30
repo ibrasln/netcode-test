@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using NetcodeTest.Networking.Shared;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -14,14 +15,16 @@ namespace NetcodeTest.Networking.Server
         public Action<string> OnClientLeft;
         
         private NetworkManager _networkManager;
+        private NetworkObject _playerPrefab;
         
         private Dictionary<ulong, string> _clientIdToAuth = new();
         private Dictionary<string, UserData> _authIdToUserData = new();
         
-        public NetworkServer(NetworkManager networkManager)
+        public NetworkServer(NetworkManager networkManager, NetworkObject playerPrefab)
         {
             _networkManager = networkManager;
-
+            _playerPrefab = playerPrefab;
+            
             _networkManager.ConnectionApprovalCallback += ApprovalCheck;
             _networkManager.OnServerStarted += OnNetworkReady;
         }
@@ -43,11 +46,20 @@ namespace NetcodeTest.Networking.Server
             _authIdToUserData[userData.UserAuthId] = userData;
 
             OnUserJoined?.Invoke(userData);
+
+            _ = SpawnPlayerDelay(request.ClientNetworkId);
             
             response.Approved = true;
-            response.Position = SpawnPoint.GetRandomSpawnPosition();
-            response.Rotation = Quaternion.identity;
-            response.CreatePlayerObject = true;
+            response.CreatePlayerObject = false;
+        }
+
+        private async Task SpawnPlayerDelay(ulong clientId)
+        {
+            await Task.Delay(1000);
+
+            NetworkObject playerInstance = GameObject.Instantiate(_playerPrefab, SpawnPoint.GetRandomSpawnPosition(), Quaternion.identity);
+            
+            playerInstance.SpawnAsPlayerObject(clientId);
         }
         
         private void OnNetworkReady()

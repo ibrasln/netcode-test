@@ -1,9 +1,12 @@
 using System;
+using System.Collections;
 using System.Threading.Tasks;
 using NetcodeTest.Networking.Client;
 using NetcodeTest.Networking.Host;
 using NetcodeTest.Networking.Server;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace NetcodeTest.Networking
 {
@@ -12,8 +15,11 @@ namespace NetcodeTest.Networking
         [SerializeField] private ClientSingleton clientPrefab;
         [SerializeField] private HostSingleton hostPrefab;
         [SerializeField] private ServerSingleton serverPrefab;
+        [SerializeField] private NetworkObject playerPrefab;
 
         private ApplicationData _applicationData;
+        
+        private const string GAME_SCENE_NAME = "Game";
         
         private async void Start()
         {
@@ -26,17 +32,18 @@ namespace NetcodeTest.Networking
         {
             if (isDedicatedServer)
             {
+                Application.targetFrameRate = 60;
+                
                 _applicationData = new();
                 
                 ServerSingleton serverSingleton = Instantiate(serverPrefab);
-                await serverSingleton.CreateServer();
 
-                await serverSingleton.GameManager.StartGameServerAsync();
+                StartCoroutine(LoadGameSceneAsync(serverSingleton));
             }
             else
             {
                 HostSingleton hostSingleton = Instantiate(hostPrefab);
-                hostSingleton.CreateHost();
+                hostSingleton.CreateHost(playerPrefab);
                 
                 ClientSingleton clientSingleton = Instantiate(clientPrefab);
                 bool authenticated = await clientSingleton.CreateClient();
@@ -46,6 +53,24 @@ namespace NetcodeTest.Networking
                     clientSingleton.GameManager.GoToMenu();
                 }
             }
+        }
+
+        private IEnumerator LoadGameSceneAsync(ServerSingleton serverSingleton)
+        {
+            AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(GAME_SCENE_NAME);
+
+            while (!asyncOperation.isDone)
+            {
+                yield return null;
+            }
+            
+            Task createServerTask = serverSingleton.CreateServer(playerPrefab);
+
+            yield return new WaitUntil(() => createServerTask.IsCompleted);
+            
+            Task startServerTask = serverSingleton.GameManager.StartGameServerAsync();
+            
+            yield return new WaitUntil(() => startServerTask.IsCompleted);
         }
     }
 }

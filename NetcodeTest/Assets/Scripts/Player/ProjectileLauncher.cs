@@ -1,4 +1,3 @@
-using System;
 using Input;
 using NetcodeTest.Coins;
 using NetcodeTest.Combat;
@@ -10,7 +9,8 @@ namespace NetcodeTest.Player
 {
     public class ProjectileLauncher : NetworkBehaviour
     {
-        [Header("References")]
+        [Header("References")] 
+        [SerializeField] private TankPlayer player;
         [SerializeField] private InputReader inputReader;
         [SerializeField] private Transform projectileSpawnPoint;
         [SerializeField] private GameObject serverProjectilePrefab;
@@ -69,7 +69,7 @@ namespace NetcodeTest.Player
             if (coinCollector.TotalCoins.Value < costToFire) return;
             
             PrimaryFireServerRpc(projectileSpawnPoint.position, projectileSpawnPoint.up);
-            SpawnDummyProjectile(projectileSpawnPoint.position, projectileSpawnPoint.up);
+            SpawnDummyProjectile(projectileSpawnPoint.position, projectileSpawnPoint.up, player.TeamIndex.Value);
             
             _timer = 1 / fireRate;
         }
@@ -81,43 +81,39 @@ namespace NetcodeTest.Player
             
             coinCollector.SpendCoins(costToFire);
             
-            GameObject projectile = Instantiate(serverProjectilePrefab, spawnPosition, Quaternion.identity);
-            projectile.transform.up = direction;
+            GameObject projectileInstance = Instantiate(serverProjectilePrefab, spawnPosition, Quaternion.identity);
+            projectileInstance.transform.up = direction;
             
-            Physics2D.IgnoreCollision(playerCollider, projectile.GetComponent<Collider2D>());
+            Physics2D.IgnoreCollision(playerCollider, projectileInstance.GetComponent<Collider2D>());
             
-            if (projectile.TryGetComponent(out DealDamageOnContact dealDamageOnContact)) dealDamageOnContact.SetOwner(OwnerClientId);
+            if (projectileInstance.TryGetComponent(out Projectile projectile)) projectile.Initialize(player.TeamIndex.Value);
             
-            if (projectile.TryGetComponent(out Rigidbody2D rb))
-            {
-                rb.velocity = rb.transform.up * projectileSpeed;
-            }
+            if (projectile.TryGetComponent(out Rigidbody2D rb)) rb.velocity = rb.transform.up * projectileSpeed;
             
-            SpawnDummyProjectileClientRpc(spawnPosition, direction);
+            SpawnDummyProjectileClientRpc(spawnPosition, direction, player.TeamIndex.Value);
         }
 
         [ClientRpc]
-        private void SpawnDummyProjectileClientRpc(Vector3 spawnPosition, Vector3 direction)
+        private void SpawnDummyProjectileClientRpc(Vector3 spawnPosition, Vector3 direction, int teamIndex)
         {
             if (IsOwner) return;
             
-            SpawnDummyProjectile(spawnPosition, direction);
+            SpawnDummyProjectile(spawnPosition, direction, teamIndex);
         }
         
-        private void SpawnDummyProjectile(Vector3 spawnPosition, Vector3 direction)
+        private void SpawnDummyProjectile(Vector3 spawnPosition, Vector3 direction, int teamIndex)
         {
             muzzleFlash.SetActive(true);
             _muzzleFlashTimer = muzzleFlashDuration;
             
-            GameObject projectile = Instantiate(clientProjectilePrefab, spawnPosition, Quaternion.identity);
-            projectile.transform.up = direction;
+            GameObject projectileInstance = Instantiate(clientProjectilePrefab, spawnPosition, Quaternion.identity);
+            projectileInstance.transform.up = direction;
             
-            Physics2D.IgnoreCollision(playerCollider, projectile.GetComponent<Collider2D>());
+            Physics2D.IgnoreCollision(playerCollider, projectileInstance.GetComponent<Collider2D>());
 
-            if (projectile.TryGetComponent(out Rigidbody2D rb))
-            {
-                rb.velocity = rb.transform.up * projectileSpeed;
-            }
+            if (projectileInstance.TryGetComponent(out Projectile projectile)) projectile.Initialize(teamIndex);
+            
+            if (projectile.TryGetComponent(out Rigidbody2D rb)) rb.velocity = rb.transform.up * projectileSpeed;
         }
 
         

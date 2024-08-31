@@ -1,27 +1,23 @@
-using System;
-using Unity.Netcode;
+using NetcodeTest.Player;
 using UnityEngine;
 
 namespace NetcodeTest.Combat
 {
     public class DealDamageOnContact : MonoBehaviour
     {
+        [SerializeField] private Projectile projectile;
         [SerializeField] private int damage = 5;
-
-        private ulong _ownerClientId;
-        
-        public void SetOwner(ulong ownerClientId)
-        {
-            _ownerClientId = ownerClientId;
-        }
         
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (other.attachedRigidbody == null) return;
-            
-            if (other.attachedRigidbody.TryGetComponent(out NetworkObject networkObject))
+
+            if (projectile.TeamIndex != -1)
             {
-                if (_ownerClientId == networkObject.OwnerClientId) return;
+                if (other.attachedRigidbody.TryGetComponent(out TankPlayer player))
+                {
+                    if (player.TeamIndex.Value == projectile.TeamIndex) return;
+                }
             }
             
             if (other.attachedRigidbody.TryGetComponent(out Health health))

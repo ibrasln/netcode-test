@@ -5011,7 +5011,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -764862589
-  m_SortingLayer: 4
+  m_SortingLayer: 2
   m_SortingOrder: 200
   m_Sprite: {fileID: 21300000, guid: a94bf141bd2044c4399e321445c83112, type: 3}
   m_Color: {r: 0.25490198, g: 0.27450982, b: 0.78431374, a: 1}
@@ -5101,7 +5101,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -764862589
-  m_SortingLayer: 4
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 1a838243856331f4681c559527ad5846, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -5260,7 +5260,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -764862589
-  m_SortingLayer: 4
+  m_SortingLayer: 2
   m_SortingOrder: 20
   m_Sprite: {fileID: 21300000, guid: 9d8bd4f8481a773488649b18bd02cbc1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -5548,6 +5548,7 @@ GameObject:
   - component: {fileID: 2097565115337716613}
   - component: {fileID: 7920200809282723181}
   - component: {fileID: 243507266476359896}
+  - component: {fileID: 6859926591318867637}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -5706,6 +5707,8 @@ MonoBehaviour:
         byte0027: 0
         byte0028: 0
         byte0029: 0
+  TeamIndex:
+    m_InternalValue: 0
 --- !u!114 &8690810822260021464
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5800,6 +5803,23 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 1
+--- !u!114 &6859926591318867637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6615289203025987273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 050f311f7f6345dc8f4ca6d666fd68b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 5460533265998729116}
+  teamColorLookup: {fileID: 11400000, guid: 94103ee7741a8d94daae17489a426c56, type: 2}
+  tankPartsSpriteRenderers:
+  - {fileID: 8947464914793043809}
+  - {fileID: 4920544830313608051}
 --- !u!1 &6736528969462312590
 GameObject:
   m_ObjectHideFlags: 0
@@ -5871,7 +5891,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -764862589
-  m_SortingLayer: 4
+  m_SortingLayer: 2
   m_SortingOrder: 100
   m_Sprite: {fileID: 21300000, guid: 8769e4453ce5bc3429cfba7d58fbef13, type: 3}
   m_Color: {r: 0.25485048, g: 0.2708615, b: 0.7830189, a: 1}

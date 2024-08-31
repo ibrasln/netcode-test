@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using NetcodeTest.Networking.Shared;
 using Unity.Netcode;
@@ -17,6 +18,7 @@ namespace NetcodeTest.Networking.Server
         private int _queryPort;
         private MatchplayBackfiller _backfiller;
         private MultiplayAllocationService _multiplayAllocationService;
+        private Dictionary<string, int> _teamIdToTeamIndex = new();
         
         public ServerGameManager(string serverIp, int serverPort, int queryPort, NetworkManager manager, NetworkObject playerPrefab)
         {
@@ -83,7 +85,14 @@ namespace NetcodeTest.Networking.Server
         private void UserJoined(UserData user)
         {
             Team team = _backfiller.GetTeamByUserId(user.UserAuthId);
-            Debug.Log($"{user.UserAuthId} {team.TeamId}");
+
+            if (!_teamIdToTeamIndex.TryGetValue(team.TeamId, out int teamIndex))
+            {
+                teamIndex = _teamIdToTeamIndex.Count;
+                _teamIdToTeamIndex.Add(team.TeamId, teamIndex);   
+            }
+
+            user.TeamIndex = teamIndex;
             
             _multiplayAllocationService.AddPlayer();
 

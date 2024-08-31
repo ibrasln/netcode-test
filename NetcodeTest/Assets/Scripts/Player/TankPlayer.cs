@@ -26,6 +26,7 @@ namespace NetcodeTest.Player
         [SerializeField] private Color minimapIconColor;
         
         public NetworkVariable<FixedString32Bytes> PlayerName = new();
+        public NetworkVariable<int> TeamIndex = new();
 
         public static event Action<TankPlayer> OnPlayerSpawned;
         public static event Action<TankPlayer> OnPlayerDespawned;
@@ -46,6 +47,7 @@ namespace NetcodeTest.Player
                 }
 
                 PlayerName.Value = userData.Username;
+                TeamIndex.Value = userData.TeamIndex;
                 
                 OnPlayerSpawned?.Invoke(this);
             }

@@ -23,6 +23,7 @@ namespace NetcodeTest.Networking.Shared
     {
         public string Username;
         public string UserAuthId;
+        public int TeamIndex = -1;
         public GameInfo UserGamePreferences = new();
     }
 

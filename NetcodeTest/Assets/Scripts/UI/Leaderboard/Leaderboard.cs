@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using NetcodeTest.Networking.Client;
+using NetcodeTest.Networking.Shared;
 using NetcodeTest.Player;
 using Unity.Netcode;
 using UnityEngine;
@@ -9,11 +11,17 @@ namespace NetcodeTest.UI.Leaderboard
     public class Leaderboard : NetworkBehaviour
     {
         [SerializeField] private Transform leaderboardEntityHolder;
+        [SerializeField] private Transform teamLeaderboardEntityHolder;
+        [SerializeField] private GameObject teamLeaderboardBackground;
         [SerializeField] private LeaderboardEntityDisplay leaderboardEntityPrefab;
         [SerializeField] private int entitiesToDisplay = 8;
+        [SerializeField] private Color ownerColor;
+        [SerializeField] private string[] teamNames;
+        [SerializeField] private TeamColorLookup teamColorLookup;
         
         private NetworkList<LeaderboardEntityState> _leaderboardEntities;
         private List<LeaderboardEntityDisplay> _entityDisplays = new();
+        private List<LeaderboardEntityDisplay> _teamEntityDisplays = new();
 
         private void Awake()
         {
@@ -24,6 +32,22 @@ namespace NetcodeTest.UI.Leaderboard
         {
             if (IsClient)
             {
+                if (ClientSingleton.Instance.GameManager.UserData.UserGamePreferences.GameQueue == GameQueue.Team)
+                {
+                    teamLeaderboardBackground.SetActive(true);
+
+                    for (int i = 0; i < teamNames.Length; i++)
+                    {
+                        LeaderboardEntityDisplay teamLeaderboardEntity = Instantiate(leaderboardEntityPrefab, teamLeaderboardEntityHolder);
+                        teamLeaderboardEntity.Initialize(i, teamNames[i], 0);
+
+                        Color teamColor = teamColorLookup.GetTeamColor(i);
+                        teamLeaderboardEntity.SetColor(teamColor);
+                        
+                        _teamEntityDisplays.Add(teamLeaderboardEntity);
+                    }
+                }
+                
                 _leaderboardEntities.OnListChanged += HandleLeaderboardEntitiesChanged;
 
                 foreach (LeaderboardEntityState entity in _leaderboardEntities)
@@ -68,12 +92,14 @@ namespace NetcodeTest.UI.Leaderboard
                 case NetworkListEvent<LeaderboardEntityState>.EventType.Add:
                     if (_entityDisplays.All(x => x.ClientId != changeEvent.Value.ClientId))
                     {
-                        LeaderboardEntityDisplay entityDisplay = Instantiate(leaderboardEntityPrefab, leaderboardEntityHolder);
-                        entityDisplay.Initialize(changeEvent.Value.ClientId, 
+                        LeaderboardEntityDisplay leaderboardEntity = Instantiate(leaderboardEntityPrefab, leaderboardEntityHolder);
+                        leaderboardEntity.Initialize(changeEvent.Value.ClientId, 
                             changeEvent.Value.PlayerName, 
                             changeEvent.Value.Coins);
-                        
-                        _entityDisplays.Add(entityDisplay);
+
+                        if (NetworkManager.Singleton.LocalClientId == changeEvent.Value.ClientId) leaderboardEntity.SetColor(ownerColor);
+                            
+                        _entityDisplays.Add(leaderboardEntity);
                     }
                     break;
                 
@@ -117,6 +143,30 @@ namespace NetcodeTest.UI.Leaderboard
                     myDisplay.gameObject.SetActive(true);
                 }
             }
+            
+            if (!teamLeaderboardBackground.activeSelf) return;
+            
+            LeaderboardEntityDisplay teamDisplay = _teamEntityDisplays.FirstOrDefault(x => x.TeamIndex == changeEvent.Value.TeamIndex);
+
+            if (teamDisplay is not null)
+            {
+                if (changeEvent.Type == NetworkListEvent<LeaderboardEntityState>.EventType.Remove)
+                {
+                    teamDisplay.UpdateCoins(teamDisplay.Coins - changeEvent.Value.Coins);
+                }
+                else
+                {
+                    teamDisplay.UpdateCoins(teamDisplay.Coins + (changeEvent.Value.Coins - changeEvent.PreviousValue.Coins));
+                }
+                
+                _teamEntityDisplays.Sort((x, y) => y.Coins.CompareTo(x.Coins));
+
+                for (int i = 0; i < _teamEntityDisplays.Count; i++)
+                {
+                    _teamEntityDisplays[i].transform.SetSiblingIndex(i);
+                    _teamEntityDisplays[i].UpdateText();
+                }
+            }
         }
 
         private void HandlePlayerSpawned(TankPlayer player)
@@ -125,6 +175,7 @@ namespace NetcodeTest.UI.Leaderboard
             {
                 ClientId = player.OwnerClientId,
                 PlayerName =  player.PlayerName.Value,
+                TeamIndex = player.TeamIndex.Value,
                 Coins = 0
             });
 
@@ -158,6 +209,7 @@ namespace NetcodeTest.UI.Leaderboard
                 {
                     ClientId = _leaderboardEntities[i].ClientId,
                     PlayerName = _leaderboardEntities[i].PlayerName,
+                    TeamIndex = _leaderboardEntities[i].TeamIndex,
                     Coins = newCoins
                 };
                 

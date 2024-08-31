@@ -17,11 +17,11 @@ namespace NetcodeTest.Networking.Client
 {
     public class ClientGameManager : IDisposable
     {
+        public UserData UserData { get; private set; }
+        
         private JoinAllocation _allocation;
         private NetworkClient _networkClient;
         private MatchplayMatchmaker _matchmaker;
-
-        private UserData _userData;
         
         private const string MENU_SCENE_NAME = "Menu";
         private const string GAME_SCENE_NAME = "Game";
@@ -37,7 +37,7 @@ namespace NetcodeTest.Networking.Client
 
             if (authState == AuthState.Authenticated)
             {
-                _userData = new UserData()
+                UserData = new UserData()
                 {
                     Username = PlayerPrefs.GetString(NameSelector.PLAYER_NAME_KEY, "Missing Name"),
                     UserAuthId = AuthenticationService.Instance.PlayerId
@@ -83,7 +83,7 @@ namespace NetcodeTest.Networking.Client
 
         private void ConnectClient()
         {
-            string payload = JsonUtility.ToJson(_userData);
+            string payload = JsonUtility.ToJson(UserData);
             byte[] payloadBytes = Encoding.UTF8.GetBytes(payload);
 
             NetworkManager.Singleton.NetworkConfig.ConnectionData = payloadBytes;
@@ -95,7 +95,7 @@ namespace NetcodeTest.Networking.Client
         {
             if (_matchmaker.IsMatchmaking) return;
 
-            _userData.UserGamePreferences.GameQueue = isTeamQueue ? GameQueue.Team : GameQueue.Solo;
+            UserData.UserGamePreferences.GameQueue = isTeamQueue ? GameQueue.Team : GameQueue.Solo;
             
             MatchmakerPollingResult matchResult = await GetMatchAsync();
             onMatchmakeResponse?.Invoke(matchResult);
@@ -103,7 +103,7 @@ namespace NetcodeTest.Networking.Client
         
         private async Task<MatchmakerPollingResult> GetMatchAsync()
         {
-            MatchmakingResult matchmakingResult = await _matchmaker.Matchmake(_userData);
+            MatchmakingResult matchmakingResult = await _matchmaker.Matchmake(UserData);
 
             if (matchmakingResult.result == MatchmakerPollingResult.Success)
             {

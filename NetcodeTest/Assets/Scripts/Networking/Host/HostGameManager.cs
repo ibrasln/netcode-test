@@ -22,9 +22,9 @@ namespace NetcodeTest.Networking.Host
     public class HostGameManager : IDisposable
     {
         public NetworkServer NetworkServer { get; private set; }
+        public string JoinCode { get; private set; }
         
         private Allocation _allocation;
-        private string _joinCode;
         private string _lobbyId;
         private NetworkObject _playerPrefab;
         
@@ -50,8 +50,8 @@ namespace NetcodeTest.Networking.Host
             
             try
             { 
-                _joinCode = await Relay.Instance.GetJoinCodeAsync(_allocation.AllocationId);
-                Debug.Log(_joinCode);
+                JoinCode = await Relay.Instance.GetJoinCodeAsync(_allocation.AllocationId);
+                Debug.Log(JoinCode);
             }
             catch (Exception ex)
             {
@@ -73,7 +73,7 @@ namespace NetcodeTest.Networking.Host
                     {
                         {
                             "JoinCode", new DataObject( visibility: DataObject.VisibilityOptions.Member,
-                                value: _joinCode)
+                                value: JoinCode)
                         }
                     }
                 };

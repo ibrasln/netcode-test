@@ -82,7 +82,8 @@ namespace NetcodeTest.Networking.Server
 
         private void UserJoined(UserData user)
         {
-            _backfiller.AddPlayerToMatch(user);
+            Team team = _backfiller.GetTeamByUserId(user.UserAuthId);
+            Debug.Log($"{user.UserAuthId} {team.TeamId}");
             
             _multiplayAllocationService.AddPlayer();
 
